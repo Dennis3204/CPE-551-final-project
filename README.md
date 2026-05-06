@@ -5,7 +5,7 @@ A Python tool that uses the NREL Alternative Fuel Stations dataset to identify r
 ## Team Members
 
 - **Dennis Ren** — dren4@stevens.edu — 20014453
-- **Dritan [Last Name]** — 
+- **Dritan Xhelilaj** — dxhelila@stevens.edu
 
 ## Description
 
