@@ -115,3 +115,91 @@ def rank_regions(regions):
     scored = [(name, gap_score(profile)) for name, profile in regions.items()]
     scored.sort(key=lambda pair: pair[1], reverse=True)
     return scored
+
+
+def underserved_regions(regions, threshold):
+    """
+    yield (region_name, score) for every region that has a gap score
+    that exceeds the threshold.
+    """
+    if threshold < 0.0 or threshold > 1.0:
+        raise ValueError(
+            f"threshold must be in [0.0, 1.0], got {threshold!r}."
+        )
+
+    for region_name, profile in regions.items():
+        score = gap_score(profile)
+        if score > threshold:
+            yield (region_name, score)
+
+
+def network_overlap(region_a, region_b):
+    """
+    Return the set of charging networks operating in both regions.
+    """
+    return region_a.unique_networks() & region_b.unique_networks()
+
+
+def networks_only_in(region_a, region_b):
+    """
+    Return networks that operate in "region_a" but not in "region_b".
+    """
+    return region_a.unique_networks() - region_b.unique_networks()
+
+
+def recursive_total(regions_list):
+    """
+    Recursively sum "total_ports()" across a list of RegionProfiles.
+    """
+    if not regions_list:
+        return 0
+    return regions_list[0].total_ports() + recursive_total(regions_list[1:])
+
+
+if __name__ == "__main__":
+    #testing
+    from pathlib import Path
+
+    from src.data_loader import clean_stations, load_stations
+
+    csv_path = (
+        Path(__file__).resolve().parent.parent
+        / "data"
+        / "alt_fuel_stations_ny.csv"
+    )
+
+    print(f"Smoke test: loading {csv_path}")
+    df = clean_stations(load_stations(csv_path))
+    regions = build_regions(df, region_col="city")
+    print(f"  Built {len(regions)} city-level RegionProfiles.\n")
+
+    # generater testing: stream the top underserved cities above a
+    THRESHOLD = 0.75
+    print(f"Underserved cities (gap_score > {THRESHOLD}):")
+    for rank, (name, score) in enumerate(
+        underserved_regions(regions, THRESHOLD), start=1
+    ):
+        print(f"  #{rank:>2} {name:<25} score={score:.3f}")
+        if rank >= 10:
+            break
+    print()
+
+    # pick the two regions with the most
+    # stations and compare their network rosters.
+    by_size = sorted(
+        regions.values(), key=lambda r: r.total_stations(), reverse=True
+    )
+    if len(by_size) >= 2:
+        a, b = by_size[0], by_size[1]
+        print(f"Comparing networks: '{a.region_name}' vs '{b.region_name}'")
+        print(f"  Shared networks:        {sorted(network_overlap(a, b))}")
+        print(f"  Only in {a.region_name}: {sorted(networks_only_in(a, b))}")
+        print(f"  Only in {b.region_name}: {sorted(networks_only_in(b, a))}")
+        print()
+
+    # Recursion testing: sum total ports across the five biggest regions.
+    top_five = by_size[:5]
+    print(
+        f"recursive_total over top-5 regions = "
+        f"{recursive_total(top_five)} ports"
+    )
