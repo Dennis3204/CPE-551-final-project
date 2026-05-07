@@ -72,3 +72,7 @@ class ChargingStation:
         if not isinstance(other, ChargingStation):
             return False
         return self.station_id == other.station_id
+
+    def __hash__(self):
+        #this is needed to allow hashing
+        return hash(self.station_id)

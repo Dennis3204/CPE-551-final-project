@@ -165,7 +165,7 @@ if __name__ == "__main__":
     csv_path = (
         Path(__file__).resolve().parent.parent
         / "data"
-        / "alt_fuel_stations_ny.csv"
+        / "alt_fuel_stations.csv"
     )
 
     print(f"Smoke test: loading {csv_path}")

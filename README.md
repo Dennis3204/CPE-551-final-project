@@ -22,9 +22,10 @@ The analyzer loads NREL station data, models each charger as a `ChargingStation`
 ## Project Structure
 
 ```
-final_project/
+CPE-551-final-project/
 ├── data/
-│   └── alt_fuel_stations_ny.csv
+│   ├── alt_fuel_stations.csv
+│   └── data_description.md
 ├── src/
 │   ├── charging_station.py
 │   ├── region_profile.py
@@ -32,9 +33,7 @@ final_project/
 │   ├── analysis.py
 │   └── visualize.py
 ├── tests/
-│   ├── test_charging_station.py
-│   ├── test_region_profile.py
-│   └── test_analysis.py
+│   └── test.py
 ├── main.ipynb
 ├── requirements.txt
 └── README.md

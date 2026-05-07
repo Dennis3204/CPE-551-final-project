@@ -125,7 +125,7 @@ def clean_stations(df):
 
 
 if __name__ == "__main__":
-    default_path = Path(__file__).resolve().parent.parent / "data" / "alt_fuel_stations_ny.csv"
+    default_path = Path(__file__).resolve().parent.parent / "data" / "alt_fuel_stations.csv"
 
     print(f"Smoke test: loading {default_path}")
     raw = load_stations(default_path)
